@@ -1,0 +1,39 @@
+{
+    "name": "saitho/cli",
+    "bin": "saitho-cli.php",
+    "authors": [
+        {
+            "name": "Mario Lubenka",
+            "email": "mario.lubenka@googlemail.com"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/niclashoyer/robo-docker-compose.git"
+        }
+    ],
+    "require": {
+        "consolidation/robo": "2.2.2 as 1.0.0",
+        "droath/robo-command-builder": "^0.0.3",
+        "droath/robo-ddev": "^0.0.3",
+        "droath/robo-docker-compose": "dev-stop as 0.0.9"
+    },
+    "autoload": {
+        "psr-4": {
+            "Saitho\\CLI\\": "src"
+        }
+    },
+    "require-dev": {
+        "bamarni/composer-bin-plugin": "^1.4"
+    },
+    "scripts": {
+        "bin": "echo 'bin not installed'",
+        "post-install-cmd": [
+            "@composer bin all install --ansi"
+        ],
+        "post-update-cmd": [
+            "@composer bin all update --ansi"
+        ]
+    }
+}

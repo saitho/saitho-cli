@@ -1,0 +1,7 @@
+{
+  "minimum-stability": "dev",
+  "prefer-stable": false,
+  "require-dev": {
+    "humbug/box": "3.x-dev"
+  }
+}

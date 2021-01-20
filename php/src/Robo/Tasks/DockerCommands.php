@@ -75,9 +75,7 @@ trait DockerCommands {
      */
     protected function getDockerComposeTask(string $configurationName, string $className)
     {
-        $config = new Config();
-        $builderConfig = $config->getExtraConfig('saitho-cli');
-        $dockerComposeConfig = $builderConfig['docker']['compose'];
+        $dockerComposeConfig = $this->getExtraConfig()['docker']['compose'];
         $configurationNames = array_keys($dockerComposeConfig);
         if (!in_array($configurationName, $configurationNames)) {
             throw new \Exception(

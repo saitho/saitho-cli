@@ -3,22 +3,15 @@ namespace Saitho\CLI\Robo\Tasks;
 
 use Saitho\CLI\Robo\Utility\Config;
 use Robo\Collection\CollectionBuilder;
+use Saitho\CLI\Robo\Utility\ConfigTrait;
 
 trait BuildCommands {
-    protected function getConfig(): array
-    {
-        $config = new Config();
-        return $config->getExtraConfig('saitho-cli') ?? [];
-    }
+    use ConfigTrait;
 
     protected function _buildCss(CollectionBuilder &$builder)
     {
-        $config = new Config();
-        $builderConfig = $config->getExtraConfig('saitho-cli');
-        $extensions = $builderConfig['typo3']['extensions'] ?? [];
-
-        $typo3Config = $config->getExtraConfig('typo3/cms');
-        $typo3WebDir = $typo3Config['web-dir'] ?? 'public';
+        $extensions = $this->getExtraConfig()['typo3']['extensions'] ?? [];
+        $typo3WebDir = $this->getExtraConfig('typo3/cms')['web-dir'] ?? 'public';
 
         /** @var \RoboFile|CollectionBuilder $builder */
         foreach ($extensions as $extKey => $settings) {
@@ -63,7 +56,7 @@ trait BuildCommands {
 
     function buildDocker($opts = ['push' => false])
     {
-        $imageName = $this->getConfig()['docker']['build']['image'] ?? '';
+        $imageName = $this->getExtraConfig()['docker']['build']['image'] ?? '';
         if (empty($imageName)) {
             throw new \Exception('Empty Docker image name! Set it in build config.');
         }

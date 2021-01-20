@@ -36,6 +36,8 @@ docker
   docker:start    
   docker:stop     
   docker:up 
+download
+  download:database
 ```
 
 ## Configuration
@@ -43,40 +45,57 @@ docker
 composer.json
 
 ```json
-"extra": {
-	"saitho-cli": {
-		"dev": {
-			"sync-db": "./var/data/preseed/db.sql",
-			"mirror-dirs": {
-				"var/data/preseed/fileadmin": "public/fileadmin"
-			},
-			"exec": {
-				"up": [
-					"bin/typo3cms database:updateschema 'safe'"
-				]
-			}
-		},
-		"docker": {
-			"build": {
-				"image": "saitho/myimage"
-			},
-			"compose": {
-				"prod": [
-					"./.docker/docker-compose.base.yml",
-					"./.docker/docker-compose.prod.yml"
-				]
-			}
-		},
-		"typo3": {
-			"extensions": {
-				"my_extension": {
-					"build": {
-						"builder": "pnpm",
-						"script": "build-css"
-					}
-				}
-			}
-		}
-	}
-},
+{
+
+  "extra": {
+    "saitho-cli": {
+      "download": {
+        "database": {
+          "connection": "ssh-docker",
+          "save_path": "./var/data/preseed/db.sql",
+          "connection_settings": {
+            "host": "0.0.0.0",
+            "user": "root",
+            "container_name": "db",
+            "db_user": "db",
+            "db_password": "db",
+            "db_name": "db"
+          }
+        }
+      },
+      "dev": {
+        "sync-db": "./var/data/preseed/db.sql",
+        "mirror-dirs": {
+          "var/data/preseed/fileadmin": "public/fileadmin"
+        },
+        "exec": {
+          "up": [
+            "bin/typo3cms database:updateschema 'safe'"
+          ]
+        }
+      },
+      "docker": {
+        "build": {
+          "image": "saitho/myimage"
+        },
+        "compose": {
+          "prod": [
+            "./.docker/docker-compose.base.yml",
+            "./.docker/docker-compose.prod.yml"
+          ]
+        }
+      },
+      "typo3": {
+        "extensions": {
+          "my_extension": {
+            "build": {
+              "builder": "pnpm",
+              "script": "build-css"
+            }
+          }
+        }
+      }
+    }
+  }
+}
 ```

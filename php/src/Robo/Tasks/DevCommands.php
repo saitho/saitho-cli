@@ -3,13 +3,14 @@ namespace Saitho\CLI\Robo\Tasks;
 
 use Saitho\CLI\Robo\Utility\Config;
 use Robo\Collection\CollectionBuilder;
+use Saitho\CLI\Robo\Utility\ConfigTrait;
 
 trait DevCommands {
+    use ConfigTrait;
+
     function devUp()
     {
-        $config = new Config();
-        $builderConfig = $config->getExtraConfig('saitho-cli');
-        $devConfig = $builderConfig['dev'] ?? [];
+        $devConfig = $this->getExtraConfig()['dev'] ?? [];
 
         $builder = $this->getBuilder();
         /** @var $builder \RoboFile|CollectionBuilder */
@@ -40,9 +41,6 @@ trait DevCommands {
 
     function devDown()
     {
-        $config = new Config();
-        $builderConfig = $config->getExtraConfig('saitho-cli');
-
         /** @var $builder \RoboFile|CollectionBuilder */
         $builder = $this->getBuilder();
         $builder
@@ -50,7 +48,7 @@ trait DevCommands {
                 ->omitSnapshot()
                 ->removeData();
 
-        $devConfig = $builderConfig['dev'] ?? [];
+        $devConfig = $this->getExtraConfig()['dev'] ?? [];
         if (!empty($devConfig['mirror-dirs']) && is_array($devConfig['mirror-dirs'])) {
             foreach (array_values($devConfig['mirror-dirs']) as $targetDir) {
                 $builder->taskDeleteDir($targetDir);

@@ -56,6 +56,15 @@ trait BuildCommands {
 
     function buildDocker($opts = ['push' => false, 'ver' => '', 'autover' => false])
     {
+        $dockerUser = getenv('DOCKER_LOGIN_USER') ?? '';
+        $dockerPassword = getenv('DOCKER_LOGIN_PASSWORD') ?? '';
+        $dockerRegistry = getenv('DOCKER_LOGIN_REGISTRY') ?? '';
+        // If environment is set, login into Docker
+        if (!empty($dockerUser) && !empty($dockerPassword)) {
+            $dockerRegistry = !empty($dockerRegistry) ? ' ' . $dockerRegistry : '';
+            exec('echo "' . $dockerPassword . '" | docker login --username ' . $dockerUser . ' --password-stdin' . $dockerRegistry);
+        }
+
         $imageName = $this->getExtraConfig()['docker']['build']['image'] ?? '';
         if (empty($imageName)) {
             throw new \Exception('Empty Docker image name! Set it in build config.');

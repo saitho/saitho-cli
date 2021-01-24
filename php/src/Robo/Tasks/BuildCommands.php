@@ -54,13 +54,12 @@ trait BuildCommands {
         return $builder;
     }
 
-    function buildDocker($opts = ['push' => false])
+    function buildDocker($opts = ['push' => false, 'ver' => '', 'autover' => false])
     {
         $imageName = $this->getExtraConfig()['docker']['build']['image'] ?? '';
         if (empty($imageName)) {
             throw new \Exception('Empty Docker image name! Set it in build config.');
         }
-
         /** @var $this \RoboFile */
         $this->taskDockerBuild()
             ->enableBuildKit()
@@ -68,6 +67,50 @@ trait BuildCommands {
             ->tag($imageName)
             ->run();
 
+        if (!empty($opts['ver']) && $opts['autover']) { // Autoversion
+            // if tag v1.1.0 is given, it will also tag v1 and v1.1
+            // if tag v1.1 is given, it will also tag v1
+            if (!preg_match('/^(?<major>v?\d)(\.(?<minor>\d))?(\.(?<patch>\d+))?$/', $opts['ver'], $matches)) {
+                throw new \Exception(
+                    sprintf('Version format "%s" is not compatible with "autover" option!', $opts['ver'])
+                );
+            }
+
+            $oldImageName = $imageName;
+            $imageNameBase = explode(':', $oldImageName)[0];
+
+            $imageNameAliases = [];
+            if (isset($matches['patch'])) {
+                $tag = $matches['major'] . '.' . $matches['minor'] . '.' . $matches['patch'];
+                $imageNameAliases[] = $imageNameBase . ':' . $tag;
+            }
+            if (isset($matches['minor'])) {
+                $tag = $matches['major'] . '.' . $matches['minor'];
+                $imageNameAliases[] = $imageNameBase . ':' . $tag;
+            }
+            if (isset($matches['major'])) {
+                $tag = $matches['major'];
+                $imageNameAliases[] = $imageNameBase . ':' . $tag;
+            }
+
+            foreach ($imageNameAliases as $newImageName) {
+                exec('docker tag ' . $oldImageName . ' ' . $newImageName);
+            }
+            if ($opts['push']) {
+                foreach ($imageNameAliases as $newImageName) {
+                    exec('docker push ' . $newImageName);
+                }
+            }
+
+            return;
+        }
+
+        if (!empty($opts['ver'])) {
+            $oldImageName = $imageName;
+            $imageNameBase = explode(':', $oldImageName)[0];
+            $imageName = $imageNameBase . ':' . $opts['ver'];
+            exec('docker tag ' . $oldImageName . ' ' . $imageName);
+        }
         if ($opts['push']) {
             exec('docker push ' . $imageName);
         }

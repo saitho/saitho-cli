@@ -1,12 +1,13 @@
 <?php
 namespace Saitho\CLI\Robo\Tasks;
 
-use Saitho\CLI\Robo\Utility\Config;
+use Saitho\CLI\Robo\Tasks\Docker\loadTasks;
 use Robo\Collection\CollectionBuilder;
 use Saitho\CLI\Robo\Utility\ConfigTrait;
 
 trait BuildCommands {
     use ConfigTrait;
+    use loadTasks;
 
     protected function _buildCss(CollectionBuilder &$builder)
     {
@@ -107,7 +108,7 @@ trait BuildCommands {
             }
             if ($opts['push']) {
                 foreach ($imageNameAliases as $newImageName) {
-                    exec('docker push ' . $newImageName);
+                    $this->taskDockerPush($newImageName)->run();
                 }
             }
 
@@ -121,7 +122,7 @@ trait BuildCommands {
             exec('docker tag ' . $oldImageName . ' ' . $imageName);
         }
         if ($opts['push']) {
-            exec('docker push ' . $imageName);
+            $this->taskDockerPush($imageName)->run();
         }
     }
 }

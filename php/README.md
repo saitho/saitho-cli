@@ -38,6 +38,7 @@ docker
   docker:up 
 download
   download:database
+  download:files
 ```
 
 ## Configuration
@@ -50,6 +51,18 @@ composer.json
   "extra": {
     "saitho-cli": {
       "download": {
+        "files": [
+          {
+            "connection": "ssh",
+            "path": "/path/on/remote/server",
+            "save_path": "./public",
+            "recursive": true,
+            "connection_settings": {
+              "host": "0.0.0.0",
+              "user": "root"
+            }
+          }
+        ],
         "database": {
           "connection": "ssh-docker",
           "save_path": "./var/data/preseed/db.sql",

@@ -8,7 +8,9 @@ trait ServiceTrait {
     {
         $reflection = new \ReflectionClass($className);
         $service = $reflection->newInstanceArgs($args);
-        if ($service instanceof BuilderAwareInterface) {
+
+        // Can't check for BuilderAwareInterface on service...
+        if ($this instanceof BuilderAwareInterface && method_exists($service, 'setBuilder')) {
             $service->setBuilder($this->getBuilder());
         }
         return $service;

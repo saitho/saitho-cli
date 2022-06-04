@@ -14,6 +14,7 @@
         }
     ],
     "require": {
+        "php": "^7.4",
         "consolidation/robo": "2.2.2 as 1.0.0",
         "droath/robo-command-builder": "^0.0.3",
         "droath/robo-ddev": "^0.0.3",
@@ -35,5 +36,10 @@
         "post-update-cmd": [
             "@composer bin all update --ansi"
         ]
+    },
+    "config": {
+        "allow-plugins": {
+            "bamarni/composer-bin-plugin": true
+        }
     }
 }

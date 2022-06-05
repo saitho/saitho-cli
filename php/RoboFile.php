@@ -4,5 +4,7 @@ class RoboFile extends \Robo\Tasks {
     use \Saitho\CLI\Robo\Tasks\DevCommands;
     use \Saitho\CLI\Robo\Tasks\BuildCommands;
     use \Saitho\CLI\Robo\Tasks\DownloadCommands;
+    use \Saitho\CLI\Robo\Tasks\UploadCommands;
+    use \Saitho\CLI\Robo\Tasks\ClearCommands;
     use \Saitho\CLI\Robo\Tasks\DockerCommands;
 }

@@ -39,7 +39,6 @@ class DownloadDatabaseService
             throw new \Exception('Missing database name.');
         }
 
-        /** @var Ssh $sshTask */
         $remoteBackupPath = '/tmp/backup.sql';
 
         // Make backup inside container
@@ -47,8 +46,7 @@ class DownloadDatabaseService
         $execTask = $this->task(Exec::class, $containerName);
         $makeBackup = $execTask
             ->exec('/usr/bin/mysqldump -u ' . $dbUser . ' --password=' . $dbPassword . ' ' . $dbDatabase . ' > ' . $remoteBackupPath);
-        $sshTask = $this->task(Ssh::class, $sshUser . '@' . $sshHost);
-        $result = $sshTask->exec($makeBackup)->run();
+        $result = $this->task(Ssh::class, $sshUser . '@' . $sshHost)->exec($makeBackup)->run();
         if (!$result->wasSuccessful()) {
             throw new \Exception('Unable to create backup on Docker container "' . $containerName . '".');
         }
@@ -68,11 +66,7 @@ class DownloadDatabaseService
         }
 
         // Remove temporary backup file
-        $execTask = $this->task(Exec::class, $containerName);
-        $removeTmpFile = $execTask
-            ->exec('rm -f ' . $remoteBackupPath);
-        $sshTask = $this->task(Ssh::class, $sshUser . '@' . $sshHost);
-        $result = $sshTask->exec($removeTmpFile)->run();
+        $result = $this->task(Ssh::class, $sshUser . '@' . $sshHost)->exec('rm -f ' . $remoteBackupPath)->run();
         if (!$result->wasSuccessful()) {
             $warnings[] = 'Note: The temporary database backup file on remote server could not be removed.';
         }

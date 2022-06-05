@@ -13,9 +13,35 @@ trait UploadCommands {
      * @return void
      * @throws \Exception
      */
-    function uploadDb(string $uploadPath): void
+    function uploadDb(string $uploadPath, string $databaseName = ''): void
     {
-        $config = $this->getExtraConfig()['upload']['database'];
+        $databasesConfig = $this->getExtraConfig()['databases'] ?? [];
+
+        if (!count($databasesConfig)) {
+            // @todo: deprecated, remove with breaking change
+            $legacyConfig = $this->getExtraConfig()['upload']['database'];
+            echo 'DEPRECATION WARNING: database interactions should use the new "databases" key. Please update your configuration, as the old upload.database syntax will stop working at some point.' . PHP_EOL;
+            $config = $legacyConfig;
+        } else {
+            if (!$databaseName) {
+                throw new \Exception('Missing argument "databaseName".');
+            }
+            $config = array_filter($databasesConfig, function ($cfg) use ($databaseName) {
+                return $cfg['name'] === $databaseName;
+            });
+            if (count($config) > 1) {
+                throw new \Exception('More than one database configuration with name "' . $databaseName . '" was found!');
+            }
+            if (!count($config)) {
+                throw new \Exception('No database configuration with name "' . $databaseName . '" was found!');
+            }
+            $config = $config[0];
+
+            if (!in_array('allowed', $config['allowed'] ?? [])) {
+                throw new \Exception('"upload" is not allowed on this database connection.');
+            }
+        }
+
         $connection = $config['connection'] ?? 'ssh-docker';
 
         /** @var UploadDatabaseService $service */

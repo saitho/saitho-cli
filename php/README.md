@@ -36,6 +36,10 @@ docker
   docker:start    
   docker:stop     
   docker:up 
+clear
+  clear:database
+upload
+  upload:database
 download
   download:database
   download:files
@@ -50,6 +54,21 @@ composer.json
 
   "extra": {
     "saitho-cli": {
+      "databases": [
+        {
+          "name": "main",
+          "connection": "ssh-docker",
+          "connection_settings": {
+            "host": "0.0.0.0",
+            "user": "root",
+            "container_name": "db",
+            "db_user": "db",
+            "db_password": "db",
+            "db_name": "db"
+          },
+          "allowed": ["download", "upload", "clear"]
+        }
+      ],
       "download": {
         "files": [
           {
@@ -62,19 +81,7 @@ composer.json
               "user": "root"
             }
           }
-        ],
-        "database": {
-          "connection": "ssh-docker",
-          "save_path": "./var/data/preseed/db.sql",
-          "connection_settings": {
-            "host": "0.0.0.0",
-            "user": "root",
-            "container_name": "db",
-            "db_user": "db",
-            "db_password": "db",
-            "db_name": "db"
-          }
-        }
+        ]
       },
       "dev": {
         "sync-db": "./var/data/preseed/db.sql",

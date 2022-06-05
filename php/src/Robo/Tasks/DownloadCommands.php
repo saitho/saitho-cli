@@ -14,16 +14,43 @@ trait DownloadCommands {
      * @return void
      * @throws \Exception
      */
-    function downloadDb(): void
+    function downloadDb(string $databaseName = '', $argSavePath = null): void
     {
-        $config = $this->getExtraConfig()['download']['database'];
+        $databasesConfig = $this->getExtraConfig()['databases'] ?? [];
+
+        if (!count($databasesConfig)) {
+            // @todo: deprecated, remove with breaking change
+            $legacyConfig = $this->getExtraConfig()['download']['database'];
+            echo 'DEPRECATION WARNING: database interactions should use the new "databases" key. Please update your configuration, as the old download.database syntax will stop working at some point.' . PHP_EOL;
+            $config = $legacyConfig;
+        } else {
+            if (!$databaseName) {
+                throw new \Exception('Missing argument "databaseName".');
+            }
+            $config = array_filter($databasesConfig, function ($cfg) use ($databaseName) {
+                return $cfg['name'] === $databaseName;
+            });
+            if (count($config) > 1) {
+                throw new \Exception('More than one database configuration with name "' . $databaseName . '" was found!');
+            }
+            if (!count($config)) {
+                throw new \Exception('No database configuration with name "' . $databaseName . '" was found!');
+            }
+            $config = $config[0];
+
+            if (!in_array('download', $config['allowed'] ?? [])) {
+                throw new \Exception('"download" is not allowed on this database connection.');
+            }
+        }
+
+
         $connection = $config['connection'] ?? 'ssh-docker';
 
         /** @var DownloadDatabaseService $service */
         $service = $this->getServiceInstance(DownloadDatabaseService::class);
         switch ($connection) {
             case 'ssh-docker':
-                $savePath = $config['save_path'] ?? './db.sql';
+                $savePath = $config['save_path'] ?? $argSavePath ?? './db.sql';
                 $warnings = $service->downloadFromDocker($config['connection_settings'], $savePath);
                 if (count($warnings)) {
                     echo implode(PHP_EOL, $warnings);

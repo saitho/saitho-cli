@@ -75,7 +75,7 @@ trait DownloadCommands {
             case 'ssh':
                 $remotePath = $config['path'] ?? '';
                 $savePath = $config['save_path'] ?? '';
-                $recursive = (bool)$config['recursive'] ?? false;
+                $recursive = (bool)($config['recursive'] ?? false);
                 $warnings = $service->download(
                     $config['connection_settings'],
                     $remotePath,

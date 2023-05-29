@@ -2,7 +2,7 @@
   "minimum-stability": "dev",
   "prefer-stable": false,
   "require-dev": {
-    "php": "^7.4",
+    "php": "^7.4||^8.1",
     "humbug/box": "3.16.0"
   }
 }

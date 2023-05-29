@@ -7,18 +7,12 @@
             "email": "mario.lubenka@googlemail.com"
         }
     ],
-    "repositories": [
-        {
-            "type": "git",
-            "url": "https://github.com/niclashoyer/robo-docker-compose.git"
-        }
-    ],
     "require": {
-        "php": "^7.4",
+        "php": "^7.4||^8.1",
         "consolidation/robo": "2.2.2 as 1.0.0",
         "droath/robo-command-builder": "^0.0.3",
         "droath/robo-ddev": "^0.0.3",
-        "droath/robo-docker-compose": "dev-stop as 0.0.9"
+        "droath/robo-docker-compose": "^0.0.8"
     },
     "autoload": {
         "psr-4": {

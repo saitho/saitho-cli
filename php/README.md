@@ -11,7 +11,7 @@
 
 ```
 composer install
-./vendor/bin/box compile
+composer run-script build
 ```
 
 => saitho-cli.phar
